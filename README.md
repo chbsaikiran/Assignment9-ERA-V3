@@ -2,7 +2,7 @@
 1. python download_cifar.py
 2. python train.py --model resnet50 --device cpu --epochs 2 --data-path ./data
 
-python train.py --model resnet50 --data-path ./data/ILSVRC/Data/CLS-LOC --batch-size 256 --epochs 100 --lr 0.1 --opt sgd --lr-scheduler cosineannealinglr --lr-warmup-epochs 5 --output-dir ./output --amp --mixup-alpha 0.2 --cutmix-alpha 1.0 --auto-augment ra --label-smoothing 0.1
+python train.py --model resnet50 --data-path ./data/ILSVRC/Data/CLS-LOC --batch-size 256 --epochs 100 --print-freq 100 --lr 0.1 --opt sgd --weight-decay 1e-4 --lr-scheduler cosineannealinglr --lr-warmup-epochs 5 --lr-warmup-method linear --output-dir ./output --amp --mixup-alpha 0.2 --cutmix-alpha 1.0 --auto-augment ra --label-smoothing 0.1
 
 # STEPS AFTER EC2 INSTANCE IS ACCESSED FROM VS CODE:
 1. Ubuntu : mkdir Repos
