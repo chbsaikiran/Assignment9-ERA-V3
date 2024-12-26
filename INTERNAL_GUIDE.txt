@@ -1,0 +1,204 @@
+#!/bin/bash
+
+# Set environment variables
+export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
+
+# Run training
+torchrun \
+    --nproc_per_node=8 \
+    train.py \
+    --model resnet50 \
+    --batch-size 32 \
+    --epochs 90 \
+    --opt adamw \
+    --lr 0.001 \
+    --weight-decay 0.05 \
+    --lr-scheduler cosineannealinglr \
+    --lr-warmup-epochs 5 \
+    --lr-warmup-method linear \
+    --output-dir ./output \
+    --resume ./output/checkpoint.pth 
+    --amp
+
+# Make script executable
+chmod +x run_training.sh
+
+
+####################################################################################
+####################################################################################
+
+
+Monitor GPU Usage
+In a separate terminal:
+watch nvidia-smi
+
+
+####################################################################################
+####################################################################################
+
+
+Common Issues and Solutions
+    1. Out of Memory (OOM)
+       # Reduce batch size
+       torchrun --nproc_per_node=8 train.py --model resnet50 --batch-size 16
+
+    2. GPU Not Found
+       # Check CUDA is available
+       python3 -c "import torch; print(torch.cuda.is_available())"
+
+       # Check visible GPUs
+       echo $CUDA_VISIBLE_DEVICES
+
+    3. Process Hanging
+       # Kill all Python processes
+       pkill python
+
+       # Or more specifically
+       pkill -f train.py
+
+
+####################################################################################
+####################################################################################
+
+
+Here is the code to download and transfer the ImageNet dataset using the Kaggle API on an AWS EC2 instance:
+
+---
+
+### **1. Install the Kaggle API**
+First, ensure the Kaggle API is installed on your EC2 instance:
+
+```bash
+pip install kaggle
+```
+
+---
+
+### **2. Upload the Kaggle API Key**
+1. Log in to your Kaggle account.
+2. Go to [Kaggle API Keys](https://www.kaggle.com/account) and click "Create New API Token."
+3. This will download a file called `kaggle.json` to your local machine.
+
+Use **scp** to transfer the `kaggle.json` file to your EC2 instance:
+
+```bash
+scp -i your-aws-key.pem kaggle.json ubuntu@your-ec2-public-ip:~/
+```
+
+---
+
+### **3. Set Up the Kaggle API Key on EC2**
+1. SSH into your EC2 instance:
+
+```bash
+ssh -i your-aws-key.pem ubuntu@your-ec2-public-ip
+```
+
+2. Create a `.kaggle` directory and move the `kaggle.json` file into it:
+
+```bash
+mkdir -p ~/.kaggle
+mv ~/kaggle.json ~/.kaggle/
+chmod 600 ~/.kaggle/kaggle.json
+```
+
+---
+
+### **4. Download the ImageNet Dataset**
+Run the Kaggle API command to download the dataset:
+
+```bash
+kaggle datasets download -d username/imagenet-dataset
+```
+
+Replace `username/imagenet-dataset` with the actual dataset name from Kaggle.
+
+---
+
+### **5. Extract the Dataset**
+If the dataset is compressed (e.g., in `.zip` format), extract it:
+
+```bash
+unzip imagenet-dataset.zip -d /path/to/your/dataset
+```
+
+---
+
+### **6. Optional: Upload the Dataset to an S3 Bucket**
+If you want to save the dataset for reuse, upload it to an S3 bucket:
+
+1. Install AWS CLI (if not already installed):
+
+```bash
+sudo apt install awscli
+```
+
+2. Configure AWS CLI with your credentials:
+
+```bash
+aws configure
+```
+
+3. Upload the dataset:
+
+```bash
+aws s3 cp /path/to/your/dataset s3://your-bucket-name/imagenet/ --recursive
+```
+
+---
+
+This process will download and prepare the ImageNet dataset for use on your EC2 instance. Let me know if you need further clarification!
+
+
+####################################################################################
+####################################################################################
+
+
+To download a dataset or competition data from Kaggle using the `kaggle` CLI, the exact command syntax depends on whether the dataset is part of a competition or a standalone dataset. 
+
+For the ImageNet Object Localization Challenge, which is part of a competition, you need to use the `competitions` subcommand, not `datasets`.
+
+Here’s the correct command:
+
+```bash
+kaggle competitions download -c imagenet-object-localization-challenge
+```
+
+### Steps to Download the Dataset:
+1. **Install Kaggle CLI**:
+   Ensure you have the Kaggle CLI installed. You can install it using pip:
+   ```bash
+   pip install kaggle
+   ```
+
+2. **Authenticate**:
+   - Go to [Kaggle Account Settings](https://www.kaggle.com/account).
+   - Scroll down to the "API" section and click on "Create New API Token."
+   - This will download a file named `kaggle.json`. Save it securely.
+   - Place the `kaggle.json` file in the directory `~/.kaggle/` (Linux/Mac) or `%USERPROFILE%\.kaggle\` (Windows).
+   - Ensure the file has proper permissions:
+     ```bash
+     chmod 600 ~/.kaggle/kaggle.json
+     ```
+
+3. **Download the Dataset**:
+   Run the following command:
+   ```bash
+   kaggle competitions download -c imagenet-object-localization-challenge
+   ```
+
+4. **Extract the Dataset**:
+   Once the dataset is downloaded, extract it using:
+   ```bash
+   unzip imagenet-object-localization-challenge.zip -d /path/to/extract/
+   ```
+
+### Notes:
+- The `-c` flag indicates you’re downloading competition data.
+- You may need sufficient disk space (~320 GB after unzipping).
+- If you're downloading specific files, use the `-f` flag:
+  ```bash
+  kaggle competitions download -c imagenet-object-localization-challenge -f <filename>
+  ``` 
+
+Let me know if you face any issues!
