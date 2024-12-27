@@ -167,6 +167,22 @@ class ImageNetLightningModel(pl.LightningModule):
             },
         }
 
+def get_args_parser(add_help=True):
+    import argparse
+    parser = argparse.ArgumentParser(description="PyTorch Classification Training", add_help=add_help)
+    
+    # Add existing arguments...
+    
+    # Add checkpoint loading argument
+    parser.add_argument(
+        "--load-checkpoint",
+        type=str,
+        default=None,
+        help="Path to checkpoint to load (e.g., output/model-12-79.15.ckpt)"
+    )
+    
+    return parser
+
 def main(args):
     # Data loading code
     train_dir = os.path.join(args.data_path, "train")
@@ -215,8 +231,16 @@ def main(args):
         pin_memory=True,
     )
     
-    # Create model
-    model = ImageNetLightningModel(args)
+    # Create or load model
+    if args.load_checkpoint:
+        print(f"Loading model from checkpoint: {args.load_checkpoint}")
+        model = ImageNetLightningModel.load_from_checkpoint(
+            args.load_checkpoint,
+            args=args
+        )
+    else:
+        print("Creating new model")
+        model = ImageNetLightningModel(args)
     
     # Callbacks
     callbacks = [
