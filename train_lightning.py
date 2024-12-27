@@ -221,6 +221,26 @@ def get_args_parser(add_help=True):
         help="Path to checkpoint to load (e.g., output/model-12-79.15.ckpt)"
     )
 
+    # Add the missing arguments
+    parser.add_argument(
+        "--print-freq",
+        default=10,
+        type=int,
+        help="print frequency"
+    )
+    parser.add_argument(
+        "--mixup-alpha",
+        default=0.0,
+        type=float,
+        help="mixup alpha (default: 0.0)"
+    )
+    parser.add_argument(
+        "--cutmix-alpha",
+        default=0.0,
+        type=float,
+        help="cutmix alpha (default: 0.0)"
+    )
+
     return parser
 
 def main(args):
