@@ -52,6 +52,18 @@ class ImageNetLightningModel(pl.LightningModule):
         self.log('train_acc1', acc1, on_step=True, on_epoch=True, sync_dist=True)
         self.log('train_acc5', acc5, on_step=True, on_epoch=True, sync_dist=True)
         
+        # Print metrics every 100 batches
+        if batch_idx % 100 == 0:
+            current_epoch = self.current_epoch
+            current_lr = self.trainer.optimizers[0].param_groups[0]['lr']
+            print(
+                f"Epoch: [{current_epoch}][{batch_idx}] "
+                f"Loss: {loss:.4f}  "
+                f"Acc@1 {acc1:.3f}  "
+                f"Acc@5 {acc5:.3f}  "
+                f"LR: {current_lr:.6f}"
+            )
+        
         return loss
 
     def validation_step(self, batch, batch_idx):
