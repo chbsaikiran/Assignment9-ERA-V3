@@ -11,6 +11,7 @@ import presets
 from transforms import get_mixup_cutmix
 from torch.utils.data.dataloader import default_collate
 from torchvision.transforms.functional import InterpolationMode
+import torchmetrics
 
 class ImageNetLightningModel(pl.LightningModule):
     def __init__(self, args):
@@ -30,10 +31,10 @@ class ImageNetLightningModel(pl.LightningModule):
         self.criterion = nn.CrossEntropyLoss(label_smoothing=args.label_smoothing)
         
         # Metrics
-        self.train_acc1 = pl.metrics.Accuracy(task='multiclass', num_classes=self.num_classes, top_k=1)
-        self.train_acc5 = pl.metrics.Accuracy(task='multiclass', num_classes=self.num_classes, top_k=5)
-        self.val_acc1 = pl.metrics.Accuracy(task='multiclass', num_classes=self.num_classes, top_k=1)
-        self.val_acc5 = pl.metrics.Accuracy(task='multiclass', num_classes=self.num_classes, top_k=5)
+        self.train_acc1 = torchmetrics.Accuracy(task='multiclass', num_classes=self.num_classes, top_k=1)
+        self.train_acc5 = torchmetrics.Accuracy(task='multiclass', num_classes=self.num_classes, top_k=5)
+        self.val_acc1 = torchmetrics.Accuracy(task='multiclass', num_classes=self.num_classes, top_k=1)
+        self.val_acc5 = torchmetrics.Accuracy(task='multiclass', num_classes=self.num_classes, top_k=5)
 
     def forward(self, x):
         return self.model(x)
