@@ -17,6 +17,7 @@ env/
 # Data
 cifar10/
 data/
+output/
 
 # Model checkpoints (optional, remove if you want to track models)
 z*.pth
