@@ -79,7 +79,33 @@ class ImageNetLightningModel(pl.LightningModule):
         self.log('val_acc1', acc1, on_epoch=True, sync_dist=True)
         self.log('val_acc5', acc5, on_epoch=True, sync_dist=True)
         
+        # Print metrics for the first batch of validation
+        if batch_idx == 0:
+            print(
+                f"\nValidation: "
+                f"Loss: {loss:.4f}  "
+                f"Acc@1 {acc1:.3f}  "
+                f"Acc@5 {acc5:.3f}"
+            )
+        
         return loss
+
+    def validation_epoch_end(self, outputs):
+        # This is called at the end of validation
+        val_loss = torch.stack([x for x in outputs]).mean()
+        val_acc1 = self.val_acc1.compute()
+        val_acc5 = self.val_acc5.compute()
+        
+        print(
+            f"\nValidation Epoch End: "
+            f"Loss: {val_loss:.4f}  "
+            f"Acc@1 {val_acc1:.3f}  "
+            f"Acc@5 {val_acc5:.3f}\n"
+        )
+        
+        # Reset metrics
+        self.val_acc1.reset()
+        self.val_acc5.reset()
 
     def configure_optimizers(self):
         # Configure parameter groups with weight decay
