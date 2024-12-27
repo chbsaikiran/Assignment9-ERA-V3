@@ -287,11 +287,16 @@ def main(args):
     
     # Create or load model
     if args.load_checkpoint:
-        print(f"Loading model from checkpoint: {args.load_checkpoint}")
-        model = ImageNetLightningModel.load_from_checkpoint(
-            args.load_checkpoint,
-            args=args
-        )
+        if args.load_checkpoint.endswith(".pth"):
+            print(f"Loading model from .pth checkpoint: {args.load_checkpoint}")
+            # Initialize the model according to args
+            model = ImageNetLightningModel(args)
+            # Load the state dictionary
+            checkpoint = torch.load(args.load_checkpoint)
+            model.load_state_dict(checkpoint)
+        else:
+            print(f"Loading model from .ckpt checkpoint: {args.load_checkpoint}")
+            model = ImageNetLightningModel.load_from_checkpoint(args.load_checkpoint, args=args)
     else:
         print("Creating new model")
         model = ImageNetLightningModel(args)
