@@ -83,15 +83,6 @@ class ImageNetLightningModel(pl.LightningModule):
         self.log('val_acc1', acc1, on_epoch=True, sync_dist=True)
         self.log('val_acc5', acc5, on_epoch=True, sync_dist=True)
         
-        # Print metrics for the first batch of validation
-        if batch_idx == 0:
-            print(
-                f"\nValidation: "
-                f"Loss: {loss:.4f}  "
-                f"Acc@1 {acc1:.3f}  "
-                f"Acc@5 {acc5:.3f}"
-            )
-        
         return loss
 
     def on_validation_epoch_end(self):
@@ -101,9 +92,9 @@ class ImageNetLightningModel(pl.LightningModule):
         val_acc5 = self.val_acc5.compute()
         
         print(
-            f"\nValidation Epoch End: "
-            f"Acc@1 {val_acc1:.3f}  "
-            f"Acc@5 {val_acc5:.3f}\n"
+            f"\nValidation Epoch Results: "
+            f"Acc@1 {val_acc1*100:.2f}%  "  # Multiply by 100 to show percentage
+            f"Acc@5 {val_acc5*100:.2f}%\n"  # Multiply by 100 to show percentage
         )
         
         # Reset metrics
