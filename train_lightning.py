@@ -74,6 +74,10 @@ class ImageNetLightningModel(pl.LightningModule):
         # Calculate accuracy
         acc1, acc5 = utils.accuracy(outputs, targets, topk=(1, 5))
         
+        # Update metrics
+        self.val_acc1.update(outputs, targets)
+        self.val_acc5.update(outputs, targets)
+        
         # Log metrics
         self.log('val_loss', loss, on_epoch=True, sync_dist=True)
         self.log('val_acc1', acc1, on_epoch=True, sync_dist=True)
@@ -90,15 +94,14 @@ class ImageNetLightningModel(pl.LightningModule):
         
         return loss
 
-    def validation_epoch_end(self, outputs):
-        # This is called at the end of validation
-        val_loss = torch.stack([x for x in outputs]).mean()
+    def on_validation_epoch_end(self):
+        """Called at the end of validation"""
+        # Calculate validation metrics
         val_acc1 = self.val_acc1.compute()
         val_acc5 = self.val_acc5.compute()
         
         print(
             f"\nValidation Epoch End: "
-            f"Loss: {val_loss:.4f}  "
             f"Acc@1 {val_acc1:.3f}  "
             f"Acc@5 {val_acc5:.3f}\n"
         )
