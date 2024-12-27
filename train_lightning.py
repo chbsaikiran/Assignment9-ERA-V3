@@ -170,17 +170,57 @@ class ImageNetLightningModel(pl.LightningModule):
 def get_args_parser(add_help=True):
     import argparse
     parser = argparse.ArgumentParser(description="PyTorch Classification Training", add_help=add_help)
+
+    # Dataset parameters
+    parser.add_argument("--data-path", default="/datasets01/imagenet_full_size/061417/", type=str, help="dataset path")
+    parser.add_argument("--model", default="resnet18", type=str, help="model name")
+    parser.add_argument("--device", default="cuda", type=str, help="device (Use cuda or cpu Default: cuda)")
+    parser.add_argument("-b", "--batch-size", default=32, type=int, help="images per gpu, the total batch size is $NGPU x batch_size")
+    parser.add_argument("--epochs", default=90, type=int, metavar="N", help="number of total epochs to run")
+    parser.add_argument("-j", "--workers", default=16, type=int, metavar="N", help="number of data loading workers (default: 16)")
     
-    # Add existing arguments...
+    # Optimizer parameters
+    parser.add_argument("--opt", default="sgd", type=str, help="optimizer")
+    parser.add_argument("--lr", default=0.1, type=float, help="initial learning rate")
+    parser.add_argument("--momentum", default=0.9, type=float, metavar="M", help="momentum")
+    parser.add_argument("--weight-decay", default=1e-4, type=float, help="weight decay")
+    parser.add_argument("--norm-weight-decay", default=None, type=float, help="weight decay for normalization layers")
+    parser.add_argument("--label-smoothing", default=0.0, type=float, help="label smoothing")
     
-    # Add checkpoint loading argument
+    # Learning rate scheduler parameters
+    parser.add_argument("--lr-scheduler", default="steplr", type=str, help="the lr scheduler")
+    parser.add_argument("--lr-warmup-epochs", default=0, type=int, help="the number of epochs to warmup")
+    parser.add_argument("--lr-warmup-method", default="constant", type=str, help="the warmup method")
+    parser.add_argument("--lr-warmup-decay", default=0.01, type=float, help="the decay for lr")
+    parser.add_argument("--lr-step-size", default=30, type=int, help="decrease lr every step-size epochs")
+    parser.add_argument("--lr-gamma", default=0.1, type=float, help="decrease lr by a factor of lr-gamma")
+    parser.add_argument("--lr-min", default=0.0, type=float, help="minimum lr of lr schedule")
+    
+    # Augmentation parameters
+    parser.add_argument("--auto-augment", default=None, type=str, help="auto augment policy")
+    parser.add_argument("--random-erase", default=0.0, type=float, help="random erasing probability")
+    
+    # Model specific parameters
+    parser.add_argument("--interpolation", default="bilinear", type=str, help="the interpolation method")
+    parser.add_argument("--val-resize-size", default=256, type=int, help="validation resize size")
+    parser.add_argument("--val-crop-size", default=224, type=int, help="validation crop size")
+    parser.add_argument("--train-crop-size", default=224, type=int, help="training crop size")
+    
+    # Other parameters
+    parser.add_argument("--output-dir", default=".", type=str, help="path to save outputs")
+    parser.add_argument("--weights", default=None, type=str, help="the weights enum name to load")
+    parser.add_argument("--backend", default="PIL", type=str.lower, help="PIL or tensor")
+    parser.add_argument("--use-v2", action="store_true", help="Use V2 transforms")
+    parser.add_argument("--amp", action="store_true", help="Use AMP training")
+
+    # Checkpoint loading
     parser.add_argument(
         "--load-checkpoint",
         type=str,
         default=None,
         help="Path to checkpoint to load (e.g., output/model-12-79.15.ckpt)"
     )
-    
+
     return parser
 
 def main(args):
