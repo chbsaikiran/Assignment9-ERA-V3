@@ -254,7 +254,7 @@ def main(args):
     # Set number of classes
     args.num_classes = len(train_dataset.classes)
     
-    # Create data loaders
+    # Create data loaders with adjusted workers
     train_loader = DataLoader(
         train_dataset,
         batch_size=args.batch_size,
@@ -309,6 +309,11 @@ def main(args):
     trainer.fit(model, train_loader, val_loader)
 
 if __name__ == "__main__":
-    from train import get_args_parser
     args = get_args_parser().parse_args()
+    
+    # Adjust number of workers to avoid warning
+    if args.workers > 2:
+        print(f"Reducing number of workers from {args.workers} to 2")
+        args.workers = 2
+        
     main(args) 
