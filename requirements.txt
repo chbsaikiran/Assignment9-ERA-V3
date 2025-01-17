@@ -1,13 +1,5 @@
-torch>=2.0.0
-torchvision>=0.15.0
-pytorch-lightning>=2.0.0
-torchmetrics>=1.0.0
-pillow>=9.0.0  # For PIL image processing
-numpy>=1.20.0  # Common dependency
-tqdm>=4.65.0   # For progress bars 
-
-# Optional - for CUDA support
-#cudatoolkit>=11.0
-
-# Optional - for better logging
-#tensorboard>=2.13.0
+torch==1.13.1
+torchvision==0.14.1
+gradio==3.16.2
+Pillow>=8.0.0
+numpy<2
