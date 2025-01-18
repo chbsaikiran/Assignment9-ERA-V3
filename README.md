@@ -43,3 +43,6 @@ Test:   [100/196]  eta: 0:00:30  loss: 3.4053 (2.8317)  acc1: 38.6719 (52.1117) 
 Test:  Total time: 0:00:54
 Test:  Acc@1 48.958 Acc@5 75.700
 </pre>
+
+
+![My Image](logs_with_train_py_screenshot.jpg)
